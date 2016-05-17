@@ -300,12 +300,12 @@ describe('config-changes module', function() {
                     munger.process(plugins_dir);
                     expect(spy).not.toHaveBeenCalledWith(path.join(temp, 'res', 'xml', 'plugins.xml'), 'utf-8');
                 });
-                it('should call graftXMLAttr for every new config munge it introduces (every leaf in config munge that does not exist)', function() {
+                it('should call graftXMLMerge for config munge mode merge it introduces', function() {
                     shell.cp('-rf', attributesplugin, plugins_dir);
                     var platformJson = PlatformJson.load(plugins_dir, 'android');
                     platformJson.addInstalledPluginToPrepareQueue('org.test.xmlattributestest', {});
 
-                    var spy = spyOn(xml_helpers, 'graftXMLAttr').andReturn(true);
+                    var spy = spyOn(xml_helpers, 'graftXMLMerge').andReturn(true);
 
                     var munger = new configChanges.PlatformMunger('android', temp, platformJson, pluginInfoProvider);
                     munger.process(plugins_dir);
@@ -317,6 +317,34 @@ describe('config-changes module', function() {
                     expect(spy.argsForCall[4][2]).toEqual('/*/application');
                     expect(spy.argsForCall[5][2]).toEqual('/*/application');
                     expect(spy.argsForCall[6][2]).toEqual('/manifest/application');
+                });
+                it('should call graftXMLReplace for config munge mode replace it introduces', function() {
+                    shell.cp('-rf', attributesplugin, plugins_dir);
+                    var platformJson = PlatformJson.load(plugins_dir, 'android');
+                    platformJson.addInstalledPluginToPrepareQueue('org.test.xmlattributestest', {});
+
+                    var spy = spyOn(xml_helpers, 'graftXMLReplace').andReturn(true);
+
+                    var munger = new configChanges.PlatformMunger('android', temp, platformJson, pluginInfoProvider);
+                    munger.process(plugins_dir);
+                    expect(spy.calls.length).toEqual(3);
+                    expect(spy.argsForCall[0][2]).toEqual('application');
+                    expect(spy.argsForCall[1][2]).toEqual('/manifest/application');
+                    expect(spy.argsForCall[2][2]).toEqual('/*/*/activity');
+                });
+                it('should call graftXMLDelete for config munge mode delete it introduces', function() {
+                    shell.cp('-rf', attributesplugin, plugins_dir);
+                    var platformJson = PlatformJson.load(plugins_dir, 'android');
+                    platformJson.addInstalledPluginToPrepareQueue('org.test.xmlattributestest', {});
+
+                    var spy = spyOn(xml_helpers, 'graftXMLDelete').andReturn(true);
+
+                    var munger = new configChanges.PlatformMunger('android', temp, platformJson, pluginInfoProvider);
+                    munger.process(plugins_dir);
+                    expect(spy.calls.length).toEqual(3);
+                    expect(spy.argsForCall[0][2]).toEqual('application');
+                    expect(spy.argsForCall[1][2]).toEqual('/manifest');
+                    expect(spy.argsForCall[2][2]).toEqual('/*/application');
                 });
             });
             describe('of plist config files', function() {
@@ -456,7 +484,7 @@ describe('config-changes module', function() {
                 expect(platformJson.root.prepare_queue.uninstalled.length).toEqual(0);
                 expect(platformJson.root.installed_plugins['com.adobe.vars']).not.toBeDefined();
             });
-            it('should call pruneXMLAttr for every config munge it completely removes from the app (every leaf that is decremented to 0)', function() {
+            it('should call pruneXMLMerge for config munge mode merge it completely removes from the app', function() {
                 shell.cp('-rf', android_two_project, temp);
                 shell.cp('-rf', attributesplugin, plugins_dir);
 
@@ -466,9 +494,9 @@ describe('config-changes module', function() {
                 var munger = new configChanges.PlatformMunger('android', temp, platformJson, pluginInfoProvider);
                 munger.process(plugins_dir);
 
-                // Now set up an uninstall and make sure pruneXMLAttr is called properly
+                // Now set up an uninstall and make sure pruneXMLMerge is called properly
                 platformJson.addUninstalledPluginToPrepareQueue('org.test.xmlattributestest');
-                var spy = spyOn(xml_helpers, 'pruneXMLAttr').andReturn(true);
+                var spy = spyOn(xml_helpers, 'pruneXMLMerge').andReturn(true);
                 munger.process(plugins_dir);
                 expect(spy.calls.length).toEqual(7);
                 expect(spy.argsForCall[0][2]).toEqual('application');

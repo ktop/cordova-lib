@@ -27,20 +27,56 @@
 
     <!-- android -->
     <platform name="android">
-        <config-file target="AndroidManifest.xml" parent="application" attr="true">
+        <!-- merge -->
+        <config-file target="AndroidManifest.xml" parent="application" mode="merge">
             <activity android:hardwareAccelerated="true" />
             <activity android:configChanges="orientation" />
         </config-file>
-        <config-file target="AndroidManifest.xml" parent="/manifest" attr="true">
+        <config-file target="AndroidManifest.xml" parent="/manifest" mode="merge">
             <uses-sdk android:targetSdkVersion="23" />
             <uses-sdk android:minSdkVersion="14" />
         </config-file>
-        <config-file target="AndroidManifest.xml" parent="/*/application" attr="true">
+        <config-file target="AndroidManifest.xml" parent="/*/application" mode="merge">
             <activity android:hardwareAccelerated="true" />
             <activity android:configChanges="orientation" />
         </config-file>
-        <config-file target="AndroidManifest.xml" parent="/manifest/application" attr="true">
+        <config-file target="AndroidManifest.xml" parent="/manifest/application" mode="merge">
             <poop android:poop="poop" />
+        </config-file>
+
+        <!-- replace -->
+        <config-file target="AndroidManifest.xml" parent="application" mode="replace">
+            <activity android:name="ChildApp" android:label="@string/app_name">
+    			<intent-filter>
+    				<action android:name="android.intent.action.MAIN" />
+    				<category android:name="android.intent.category.LAUNCHER" />
+    			</intent-filter>
+            </activity>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/manifest/application" mode="replace">
+            <activity android:name="ChildApp" android:label="@string/app_name">
+    			<intent-filter>
+    				<action android:name="android.intent.action.MAIN" />
+    				<category android:name="android.intent.category.LAUNCHER" />
+    			</intent-filter>
+            </activity>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/*/*/activity" mode="replace">
+            <intent-filter android:name="intent">
+			</intent-filter>
+        </config-file>
+
+        <!-- delete -->
+        <config-file target="AndroidManifest.xml" parent="application" mode="delete">
+            <activity android:name="com.phonegap.DroidGap" android:label="@string/app_name"
+                	  android:configChanges="orientation|keyboardHidden" />
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/manifest" mode="delete">
+            <uses-sdk android:minSdkVersion="5" />
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/*/application" mode="delete">
+            <activity android:name="com.phonegap.DroidGap" android:label="@string/app_name"
+                	  android:configChanges="orientation|keyboardHidden" />
         </config-file>
     </platform>
 

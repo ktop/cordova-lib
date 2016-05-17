@@ -98,7 +98,7 @@ module.exports = {
     },
 
     // adds attributes of each node to doc at selector
-    graftXMLAttr: function(doc, nodes, selector, after) {
+    graftXMLMerge: function(doc, nodes, selector, after) {
         var parent = resolveParent(doc, selector);
         if (!parent) return false;
 
@@ -112,6 +112,40 @@ module.exports = {
             }
             else {
                 return false;
+            }
+        });
+
+        return true;
+    },
+
+    // replaces nodes from doc at selector
+    graftXMLReplace: function(doc, nodes, selector, after) {
+        var parent = resolveParent(doc, selector);
+        if (!parent) return false;
+
+        var children = parent.getchildren();
+        children.forEach(function(child) {
+            parent.remove(child);
+        });
+
+        module.exports.graftXML(doc, nodes, selector, after);
+
+        return true;
+    },
+
+    // deletes nodes from doc at selector
+    graftXMLDelete: function(doc, nodes, selector, after) {
+        var parent = resolveParent(doc, selector);
+        if (!parent) return false;
+
+        nodes.forEach(function(node) {
+            var children = parent.findall(node.tag),
+            i, j;
+
+            for (i = 0, j = children.length ; i < j ; i++) {
+                if (isAttributeEqual(node, children[i])) {
+                    parent.remove(children[i]);
+                }
             }
         });
 
@@ -136,7 +170,7 @@ module.exports = {
     },
 
     // removes attributes of each node from doc at selector
-    pruneXMLAttr: function(doc, nodes, selector) {
+    pruneXMLMerge: function(doc, nodes, selector) {
         var parent = resolveParent(doc, selector);
         if (!parent) return false;
 
@@ -331,4 +365,21 @@ function textMatch(elm1, elm2) {
     var text1 = elm1.text ? elm1.text.replace(/\s+/, '') : '',
         text2 = elm2.text ? elm2.text.replace(/\s+/, '') : '';
     return (text1 === '' || text1 === text2);
+}
+
+// Compares the attributes of two elements.
+// Will return true if length and content of attributes are the same. 
+function isAttributeEqual(elem1, elem2) {
+    if (Object.keys(elem1.attrib).length === Object.keys(elem2.attrib).length) {
+        var attributes = elem1.attrib;
+        for (var attribute in attributes) {
+            if (elem1.attrib[attribute] !== elem2.attrib[attribute]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    else {
+        return false;
+    }
 }

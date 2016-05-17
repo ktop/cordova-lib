@@ -89,8 +89,8 @@
         <config-file target="AndroidManifest.xml" parent="application" >
             <activity android:name="NewActivity" />
         </config-file>
-        <!-- add new attribute and overwrite attribute -->
-        <config-file target="AndroidManifest.xml" parent="/manifest" attr="true">
+        <!-- merge attributes -->
+        <config-file target="AndroidManifest.xml" parent="/manifest" mode="merge">
             <application android:name="MyApplication"/>
             <uses-sdk android:minSdkVersion="15"/>
         </config-file>

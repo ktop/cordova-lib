@@ -477,7 +477,7 @@ ConfigParser.prototype = {
                     target : tag.attrib['target'],
                     parent : tag.attrib['parent'],
                     after : tag.attrib['after'],
-                    attr : tag.attrib['attr'],
+                    mode : tag.attrib['mode'],
                     xmls : tag.getchildren(),
                     // To support demuxing via versions
                     versions : tag.attrib['versions'],
